@@ -9,8 +9,8 @@
         </div>
         <div class="d-flex justify-content-center p-3">
             <div >
-                <button class="btn btn-primary m-1" @click="startPicker" :disabled="isRunning || !isValidInput">Pause</button>
-                <button class="btn btn-danger m-1" @click="stopPicker" :disabled="!isRunning">Stop</button>
+                <button class="btn btn-primary m-1" @click="startPicker" :hidden="isRunning || !isValidInput">Start Picking</button>
+                <button class="btn btn-danger m-1" @click="stopPicker" :hidden="!isRunning">Pick Another</button>
             </div>
         </div>
 
@@ -19,9 +19,6 @@
             <H1 style="font-weight: bold; font-size: 60px" class="form-control text-center p-5" rows="1" readonly>
             {{ selectedName }}</h1>
         </div>
-
-        <audio ref="audioNotification" src="src\assets\notifications\end.wav"></audio>
-             
     </div>
 </template>
 
@@ -33,6 +30,7 @@ export default {
       inputNames: '',
       isRunning: false,
       selectedName: '',
+      remainingNames: [],
       intervalId: null,
     };
   },
@@ -50,16 +48,21 @@ export default {
     startPicker() {
       if (this.isValidInput && !this.isRunning) {
         this.isRunning = true;
-
-        this.intervalId = setInterval(() => {
-          const randomIndex = Math.floor(Math.random() * this.namesArray.length);
-          this.selectedName = this.namesArray[randomIndex];
-        }, 5000);
+        this.remainingNames = [...this.namesArray];
+          if (this.remainingNames.length > 0) {
+            const randomIndex = Math.floor(Math.random() * this.remainingNames.length);
+            this.selectedName = this.remainingNames.splice(randomIndex, 1)[0];
+          } else {
+            this.stopPicker();
+          }
+       
       }
     },
     stopPicker() {
       clearInterval(this.intervalId);
       this.isRunning = false;
+      this.selectedName = '';
+      this.remainingNames = [];
     },
   },
   beforeDestroy() {

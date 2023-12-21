@@ -23,5 +23,4 @@
 export default{
     props: ['showAboutComponent']
 }
-
 </script>
